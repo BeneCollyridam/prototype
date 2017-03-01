@@ -84,13 +84,15 @@ var drawLocks = () => {
     let btn = document.createElement('div');
     let slider = document.createElement('div');
     slider.setAttribute('class', `${l.state ? 'sLock' : 'sOpen'}`);
+    slider.setAttribute('key', `${i}`);
+    slider.addEventListener('click', changeState);
     btn.setAttribute('class', `button locks ${l.state ? 'open' : 'locked'}`);
     btn.innerHTML = `Lås '${l.name}' ${l.state ? '' : 'op'}`;
     btn.setAttribute('key', `${i}`);
     btn.addEventListener('click', changeState);
     btn.setAttribute('style', 
       `
-      background-image: url('/images/lock.svg'), url('/images/unlock.svg');
+      background-image: url('images/lock.svg'), url('images/unlock.svg');
       background-position: top left, top right;
       background-repeat: no-repeat;
       background-size: 20px;
