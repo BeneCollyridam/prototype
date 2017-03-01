@@ -1,0 +1,151 @@
+<!DOCType html>
+<html>
+  <head>
+    <title>DIGIKEY</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<style>
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: arial;
+  font-size: 16px;
+  background: #f1f1ff;
+}
+
+li {
+  display: inline-block;
+  margin: 1%;
+  font-size: 20px;
+  text-align: center;
+  height: 100%;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+ul {
+  text-align: center;
+  margin: 1em 0 1em 0;
+}
+
+.selected {
+  border: 2px solid #0D47A1;
+  background: #BBDEFB;
+}
+
+
+.unselected {
+  background: #BBDEFB;
+  /*background: #f00;*/
+}
+
+header {
+  border-bottom: 1px solid black;
+}
+
+article {
+  display: block;
+  margin: 1em 5% 0 5%;
+}
+
+footer {
+  margin-top: 1em;
+  padding: 2% 2%;
+  background: #2f2f2f;
+  color: #fff;
+  position: relative;
+
+}
+
+.button {
+  padding: 0.5em;
+  border-radius: 5px;
+  margin: auto;
+  text-align: center;
+}
+
+.success {
+  background: blue;
+  box-shadow: 0 10px 0 0 rgba(0, 0, 128, 0.9);
+}
+
+.success:active {
+  position: relative;
+  top: 10px;
+  background: blue;
+  box-shadow: 0 0 0 0 green;  
+}
+
+</style>
+  </head>
+  <body>
+    <header>
+      <ul>
+        <li onclick="getState('main.html', 'Indstillinger')" class="selected">Oversigt</li>
+        <li onclick="getState('settings.html', 'Indstillinger')" class="selected">Indstillinger</li>
+      </ul>
+    </header>
+    
+    <article id="content">
+    </article>
+
+    <footer>
+      <p>Find mere information om sikkerheden i appen her. 
+      </p>
+     <p onclick="prompt('Systemet kunne ikke genkende dit kodeord. Prøv igen eller kontakt kundeservice på tlf. 33 33 33 33')" style="font-size:8px;">Ikoner fra Flaticon</p>
+    </footer>
+
+
+    <script>
+var lockAll = () => {
+  var lockData = JSON.parse(localStorage.getItem("locks"));
+  lockData.forEach((l, i) => {l.state = false})
+  localStorage.setItem("locks", JSON.stringify(lockData));
+  try {
+    document.dispatchEvent(update);
+  }
+  catch (ReferenceError) {
+    console.log("You're not on the view page");
+  }
+}
+
+var unlockAll = () => {
+  var lockData = JSON.parse(localStorage.getItem("locks"));
+  lockData.forEach((l, i) => {l.state = true})
+  localStorage.setItem("locks", JSON.stringify(lockData));
+  try {
+    document.dispatchEvent(update);
+  }
+  catch (ReferenceError) {
+    console.log("You're not on the view page");
+  }
+}
+
+
+let update = new Event('update')
+let content = document.getElementById("content")
+document.addEventListener('update', () => {
+  content.innerHTML = history.state.data;
+  [].slice.call(content.getElementsByTagName('script')).forEach((item) => {
+    eval(item.innerHTML);
+  })
+})
+
+let getState = (url, title="Hjem") => {
+  fetch(url).then( res => {
+
+    res.text().then(raw => {
+      history.pushState({data: raw}, title);
+      document.dispatchEvent(update);
+    })
+
+  }).catch(err => console.error(err))
+}
+getState('main.html')
+    </script>
+  </body>
+</html>

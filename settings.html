@@ -1,0 +1,67 @@
+<style>
+.btn {
+  background: #BBDEFB;
+  font-size: 20px;
+  margin: 5px;
+  border-radius: 5px;
+  padding: 5px;
+}
+</style>
+<h2>
+  Indstillinger
+</h2>
+<div id="locks"></div>
+
+
+<script>
+
+var locks = document.getElementById('locks');
+
+var drawLocks = () => {
+  [].slice.call(locks.children).forEach( el => locks.removeChild( el ) );
+  var lockData = JSON.parse(localStorage.getItem("locks"));
+  lockData.forEach( (l, i) => {
+    let btn = document.createElement('div');
+    btn.setAttribute('class', 'btn');
+    btn.innerHTML = `${l.name}` 
+  
+    let share = document.createElement("a");
+    share.setAttribute('href','#');
+    share.setAttribute('style',`
+      margin-left: 1em;
+      background: url("/images/share-option.svg");
+      height: 20px;
+      font-size: 16px;
+      display: inline-block;
+      background-size: contain;
+      padding-left: 25px;
+      background-repeat: no-repeat;
+    `)
+    share.innerHTML = 'Del nøgle';
+    share.addEventListener('click', () => {prompt("Indtast telefonnummer på modtager");})
+
+    let deleteBtn = document.createElement("div");
+    deleteBtn.setAttribute('key', i);
+    deleteBtn.setAttribute('style', 'font-size: 27px; line-height: 22px; display: inline-block; float: right;');
+    deleteBtn.addEventListener('click', deleteLock);
+    deleteBtn.innerHTML = "&times;";
+
+    btn.appendChild(share)
+    btn.appendChild(deleteBtn)
+
+    locks.appendChild(btn);
+  })
+}
+
+
+var deleteLock = (el) => {
+  if (prompt("Hvis du er sikker på at du vil slette låsen skriv da SLET i tekstboksen").toLowerCase() == "slet") {
+    var lockData = JSON.parse(localStorage.getItem("locks"));
+    lockData.pop(el.target.key);
+    localStorage.setItem("locks", JSON.stringify(lockData));
+    drawLocks();
+  }
+}
+
+drawLocks()
+</script>
