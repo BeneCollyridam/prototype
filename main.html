@@ -1,0 +1,118 @@
+<style>
+#newLock {
+  width: 50%;
+  color: white;
+}
+
+.locks {
+  padding: 10px;
+  margin: 5px;
+}
+
+.open {
+  /*background: red;*/
+  color: #000;
+}
+
+.locked {
+  /*background: green;*/
+  color: #000;
+}
+
+.sOpen {
+  height: 30px;
+  border-radius: 5px;
+  width: 100%;
+  background: linear-gradient( 90deg, #1565C0 10%, rgba(0,0,0,0.1) 10% );
+  border: 1px solid black;
+}
+
+.sLock {
+  height: 30px;
+  border-radius: 5px;
+  width: 100%;
+  background: linear-gradient( 90deg, rgba(0,0,0,0.3) 90%, #1565C0 90% );
+  border: 1px solid black;
+}
+
+.lockall {
+  color: white;
+  background: #1565C0;
+  box-shadow: 0 10px 0 0 #1E88E5;
+}
+
+.lockall:active {
+  position: relative;
+  top: 10px;
+  background: #1E88E5;
+  box-shadow: 0 0 0 0 #1E88E5;  
+}
+
+#locks {
+  margin-top: 30px;
+}
+</style>
+<div>
+  <h2>Grupper</h2>
+  <ul>
+    <li class="button lockall" onclick="lockAll()">Lås alle</li>
+    <li class="button lockall" onclick="unlockAll()">Lås alle op</li>
+  </ul>
+  <div id="locks">
+  </div>
+  <div class="button lockall" id="newLock">
+    Tilføj lås
+  </div>
+</div>
+
+<script>
+let newLock = document.getElementById('newLock');
+let locks = document.getElementById('locks');
+
+var changeState = (e) => {
+  let key = e.target.getAttribute('key');
+  var lockData = JSON.parse(localStorage.getItem("locks"));
+  lockData[key].state = ! lockData[key].state
+  localStorage.setItem("locks", JSON.stringify(lockData));
+  drawLocks();
+}
+
+var drawLocks = () => {
+  [].slice.call(locks.children).forEach( el => locks.removeChild( el ) );
+  var lockData = JSON.parse(localStorage.getItem("locks"));
+  lockData.forEach( (l, i) => {
+    let btn = document.createElement('div');
+    let slider = document.createElement('div');
+    slider.setAttribute('class', `${l.state ? 'sLock' : 'sOpen'}`);
+    btn.setAttribute('class', `button locks ${l.state ? 'open' : 'locked'}`);
+    btn.innerHTML = `Lås '${l.name}' ${l.state ? '' : 'op'}`;
+    btn.setAttribute('key', `${i}`);
+    btn.addEventListener('click', changeState);
+    btn.setAttribute('style', 
+      `
+      background-image: url('/images/lock.svg'), url('/images/unlock.svg');
+      background-position: top left, top right;
+      background-repeat: no-repeat;
+      background-size: 20px;
+    `);
+    btn.appendChild(slider);
+
+    locks.appendChild(btn);
+  })
+}
+
+newLock.addEventListener('click', () => {
+  let name = prompt("Navn på den nye lås");
+  if (name !== null){
+  var locks = JSON.parse(localStorage.getItem("locks"));
+  if(locks == null){
+    locks = []
+  }
+  locks.push({name, state: false});
+  localStorage.setItem("locks", JSON.stringify(locks));
+  drawLocks();
+  }
+})
+
+drawLocks();
+</script>
